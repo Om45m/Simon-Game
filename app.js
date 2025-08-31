@@ -10,11 +10,13 @@ let movesLeft = 0;
 let buttons = ['yellow','red','green','purple'];
 let h2 = document.querySelector('h2');
 
-document.addEventListener('keypress',function(){
-    if(!start){
-        start = true;
-        levelup();
-    }
+["keypress", "click"].forEach(event => {
+    document.addEventListener(event, () => {
+        if (!start) {
+            start = true;
+            levelup();
+        }
+    });
 });
 
 function gameflash(btn) {
@@ -124,3 +126,4 @@ function showLosePopup(message) {
         document.body.classList.remove("lose");
     }, 1500);
 }
+
