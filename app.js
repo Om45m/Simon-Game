@@ -10,14 +10,8 @@ let movesLeft = 0;
 let buttons = ['yellow','red','green','purple'];
 let h2 = document.querySelector('h2');
 
-// document.addEventListener('keypress',function(){
-//     if(!start){
-//         start = true;
-//         levelup();
-//     }
-// });
-
-["keypress", "click"].forEach(event => {
+// Start game on key, click or tap
+["keypress", "click", "touchstart"].forEach(event => {
     document.addEventListener(event, () => {
         if (!start) {
             start = true;
@@ -54,8 +48,6 @@ function levelup(){
 
     gameflash(ranbtn);
     updateDisplay();
-
-    
 }
 
 function check(index){
@@ -63,16 +55,16 @@ function check(index){
         movesLeft = totalMoves - user.length;
         updateDisplay();
         if(user.length == game.length){
-             confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-     showPopup("Next Level 🚀");
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            showPopup("Next Level 🚀");
             setTimeout(levelup,1000);
         }
     } else {
-        h2.innerHTML = `Game Over! <b>Your score was ${level}</b><br>Press any key to start`;
+        h2.innerHTML = `Game Over! <b>Your score was ${level}</b><br>Press any key, click or tap to start`;
         document.body.classList.add("danger");
         setTimeout(() => document.body.classList.remove("danger"), 500);
         showLosePopup("Oops! You Lost 😢 Try Again!");
@@ -91,6 +83,7 @@ function buttonpress(){
 let allbutton = document.querySelectorAll('.btn');
 for (let btn of allbutton){
     btn.addEventListener('click',buttonpress);
+    btn.addEventListener('touchstart',buttonpress);
 }
 
 function updateDisplay() {
@@ -115,19 +108,14 @@ function showPopup(message) {
     const popup = document.getElementById("nextLevelPopup");
     popup.textContent = message;
     popup.classList.add("show");
-
-    setTimeout(() => {
-        popup.classList.remove("show");
-    }, 1500); // disappears after 1.5s
+    setTimeout(() => popup.classList.remove("show"), 1500);
 }
 
 function showLosePopup(message) {
     const popup = document.getElementById("losePopup");
     popup.textContent = message;
     popup.classList.add("show");
-
-    document.body.classList.add("lose"); // flash red
-
+    document.body.classList.add("lose");
     setTimeout(() => {
         popup.classList.remove("show");
         document.body.classList.remove("lose");
