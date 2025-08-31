@@ -12,10 +12,16 @@ let isFlashing = false;
 const buttons = ['red', 'yellow', 'purple', 'green'];
 const h2 = document.querySelector('h2');
 
-// Prevent default touch behavior on body
-document.addEventListener('touchstart', (e) => {
-  if (!start && e.target.tagName !== 'BUTTON') e.preventDefault();
-}, { passive: false });
+// Prevent scrolling on mobile
+document.body.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
+// Ensure container stays square
+function resizeContainer() {
+  const container = document.querySelector('.container');
+  container.style.height = `${container.offsetWidth}px`;
+}
+window.addEventListener('resize', resizeContainer);
+window.dispatchEvent(new Event('resize'));
 
 // Start game on keypress, click, or touch
 ['keypress', 'click', 'touchstart'].forEach(event => {
@@ -30,10 +36,7 @@ document.addEventListener('touchstart', (e) => {
 function gameFlash(btn) {
   return new Promise(resolve => {
     btn.classList.add('flash');
-    setTimeout(() => {
-      btn.classList.remove('flash');
-      resolve();
-    }, 250);
+    setTimeout(() => { btn.classList.remove('flash'); resolve(); }, 250);
   });
 }
 
@@ -56,17 +59,15 @@ async function levelUp() {
 
   h2.innerText = `Level ${level}`;
 
-  const ranIndex = Math.floor(Math.random() * 4);
-  const ranColor = buttons[ranIndex];
+  const ranColor = buttons[Math.floor(Math.random() * 4)];
   game.push(ranColor);
   totalMoves = game.length;
   movesLeft = totalMoves;
 
-  // Flash the entire sequence
   for (const color of game) {
     const btn = document.querySelector(`#${color}`);
     await gameFlash(btn);
-    await new Promise(resolve => setTimeout(resolve, 250)); // Pause between flashes
+    await new Promise(r => setTimeout(r, 250));
   }
 
   updateDisplay();
@@ -75,29 +76,28 @@ async function levelUp() {
 }
 
 function check(index) {
-  if (isProcessing || isFlashing) return;
-  isProcessing = true;
+  if (isFlashing) return; // block input during sequence flash
 
   if (user[index] === game[index]) {
     movesLeft = totalMoves - user.length;
     updateDisplay();
+
     if (user.length === game.length) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      // Player completed sequence
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       showPopup('Next Level 🎉');
-      setTimeout(levelUp, 1500);
-    } else {
+
+      // Reset flags before next level
       isProcessing = false;
+      isFlashing = false;
+
+      setTimeout(levelUp, 1000); // slight delay for popup
     }
   } else {
-    h2.innerHTML = `Game Over! <b>Your score was ${level}</b><br>Press any key, click, or tap to start`;
+    // Wrong move
     document.body.classList.add('danger');
-    setTimeout(() => document.body.classList.remove('danger'), 500);
+    h2.innerHTML = `Game Over! <b>Your score was ${level}</b><br>Press any key, click, or tap to start`;
     showLosePopup('Oops! You Lost 😢 Try Again!');
-    reset();
   }
 }
 
@@ -106,13 +106,11 @@ function buttonPress(e) {
   e.preventDefault();
   const btn = this;
   userFlash(btn);
-  const userColor = btn.getAttribute('id');
-  user.push(userColor);
+  user.push(btn.getAttribute('id'));
   check(user.length - 1);
 }
 
-const allButtons = document.querySelectorAll('.btn');
-allButtons.forEach(btn => {
+document.querySelectorAll('.btn').forEach(btn => {
   btn.addEventListener('click', buttonPress);
   btn.addEventListener('touchstart', buttonPress, { passive: false });
 });
@@ -143,22 +141,17 @@ function showPopup(message) {
   popup.classList.add('show');
   setTimeout(() => popup.classList.remove('show'), 1500);
 }
-
 function showLosePopup(message) {
   const popup = document.getElementById('losePopup');
   popup.textContent = message;
   popup.classList.add('show');
   document.body.classList.add('lose');
+
+  // Add delay before resetting so player sees message
   setTimeout(() => {
     popup.classList.remove('show');
     document.body.classList.remove('lose');
-    isProcessing = false;
-  }, 1500);
+    document.body.classList.remove('danger');
+    reset(); // reset after delay
+  }, 2000); // 2 seconds delay after loss
 }
-
-// Maintain square container
-window.addEventListener('resize', () => {
-  const container = document.querySelector('.container');
-  container.style.height = `${container.offsetWidth}px`;
-});
-window.dispatchEvent(new Event('resize'));
