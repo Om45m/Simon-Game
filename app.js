@@ -3,23 +3,24 @@ let user = [];
 let start = false;
 let level = 0;
 let score = 0;
-let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
+let highScore = localStorage.getItem('simonHighScore') ? parseInt(localStorage.getItem('simonHighScore')) : 0;
 let totalMoves = 0;
 let movesLeft = 0;
 let isProcessing = false;
+let isFlashing = false;
 
 const buttons = ['red', 'yellow', 'purple', 'green'];
 const h2 = document.querySelector('h2');
 
-// Prevent default touch behavior on body to avoid scrolling
+// Prevent default touch behavior on body
 document.addEventListener('touchstart', (e) => {
-  if (!start) e.preventDefault();
+  if (!start && e.target.tagName !== 'BUTTON') e.preventDefault();
 }, { passive: false });
 
 // Start game on keypress, click, or touch
 ['keypress', 'click', 'touchstart'].forEach(event => {
-  document.addEventListener(event, () => {
-    if (!start && !isProcessing) {
+  document.addEventListener(event, (e) => {
+    if (!start && !isProcessing && !isFlashing && e.target.tagName !== 'BUTTON') {
       start = true;
       levelUp();
     }
@@ -27,8 +28,13 @@ document.addEventListener('touchstart', (e) => {
 });
 
 function gameFlash(btn) {
-  btn.classList.add('flash');
-  setTimeout(() => btn.classList.remove('flash'), 250);
+  return new Promise(resolve => {
+    btn.classList.add('flash');
+    setTimeout(() => {
+      btn.classList.remove('flash');
+      resolve();
+    }, 250);
+  });
 }
 
 function userFlash(btn) {
@@ -36,45 +42,40 @@ function userFlash(btn) {
   setTimeout(() => btn.classList.remove('userflash'), 250);
 }
 
-function levelUp() {
-  if (isProcessing) return;
+async function levelUp() {
+  if (isProcessing || isFlashing) return;
   isProcessing = true;
+  isFlashing = true;
   user = [];
   level++;
   score = level;
   if (score > highScore) {
     highScore = score;
-    localStorage.setItem('highScore', highScore);
+    localStorage.setItem('simonHighScore', highScore);
   }
 
   h2.innerText = `Level ${level}`;
 
   const ranIndex = Math.floor(Math.random() * 4);
   const ranColor = buttons[ranIndex];
-  const ranBtn = document.querySelector(`#${ranColor}`);
-
   game.push(ranColor);
   totalMoves = game.length;
   movesLeft = totalMoves;
 
-  // Flash sequence for all moves in game array
-  let flashIndex = 0;
-  function flashSequence() {
-    if (flashIndex < game.length) {
-      const btn = document.querySelector(`#${game[flashIndex]}`);
-      gameFlash(btn);
-      flashIndex++;
-      setTimeout(flashSequence, 500);
-    } else {
-      isProcessing = false;
-    }
+  // Flash the entire sequence
+  for (const color of game) {
+    const btn = document.querySelector(`#${color}`);
+    await gameFlash(btn);
+    await new Promise(resolve => setTimeout(resolve, 250)); // Pause between flashes
   }
-  flashSequence();
+
   updateDisplay();
+  isProcessing = false;
+  isFlashing = false;
 }
 
 function check(index) {
-  if (isProcessing) return;
+  if (isProcessing || isFlashing) return;
   isProcessing = true;
 
   if (user[index] === game[index]) {
@@ -101,7 +102,7 @@ function check(index) {
 }
 
 function buttonPress(e) {
-  if (!start || isProcessing) return;
+  if (!start || isProcessing || isFlashing) return;
   e.preventDefault();
   const btn = this;
   userFlash(btn);
@@ -133,6 +134,7 @@ function reset() {
   movesLeft = 0;
   updateDisplay();
   isProcessing = false;
+  isFlashing = false;
 }
 
 function showPopup(message) {
@@ -154,7 +156,7 @@ function showLosePopup(message) {
   }, 1500);
 }
 
-// Maintain square container on resize
+// Maintain square container
 window.addEventListener('resize', () => {
   const container = document.querySelector('.container');
   container.style.height = `${container.offsetWidth}px`;
