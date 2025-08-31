@@ -1,49 +1,52 @@
+/* Body and layout */
 body {
-  text-align: center;
+  margin: 0;
   font-family: "Poppins", sans-serif;
   background: linear-gradient(135deg, #ece9e6, #ffffff);
-  margin: 0;
-  min-height: 100dvh;   /* correct height on mobiles */
   display: flex;
   flex-direction: column;
+  justify-content: space-between;  /* spread header, grid, footer */
   align-items: center;
-  justify-content: flex-start;
+  min-height: 100vh;
+  height: 100%;
   overflow: hidden;
+  text-align: center;
 }
 
 body.danger {
   background: #ff4d4d !important;
 }
 
+/* Headings */
 h1 {
-  font-size: 2.5rem;
-  margin: 15px 0 5px;
+  font-size: 2rem;
+  margin: 10px 0 5px;
   color: #333;
 }
 
 h2 {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
+  font-size: 1rem;
+  margin-bottom: 10px;
   color: #555;
 }
 
 /* Scoreboard */
 .scoreboard {
   display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 10px auto 20px;
-  max-width: 800px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 5px;
+  width: 95%;
+  max-width: 800px;
 }
 
 .card {
-  flex: 1;
-  min-width: 130px;
+  flex: 1 1 100px;
   background: #fff;
   border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
 }
 
@@ -51,33 +54,32 @@ h2 {
   display: block;
   font-size: 14px;
   color: #777;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .card span {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
   color: #333;
 }
 
-/* Game container as full grid */
+/* Game grid container */
 .container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 15px;
-  width: 90vw;       /* almost full width */
-  max-width: 500px;  /* limit for desktops */
-  aspect-ratio: 1/1; /* square shape */
-  margin-top: 10px;
+  gap: 10px;
+  width: 90vw;
+  max-width: 500px;
+  height: 50vh;   /* scale grid height */
 }
 
 /* Buttons */
 .btn {
-  border: 4px solid black;
-  border-radius: 12px;
   width: 100%;
   height: 100%;
+  border-radius: 12px;
+  border: 3px solid black;
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -86,16 +88,17 @@ h2 {
   transform: scale(0.95);
 }
 
+/* Button colors */
 .red { background-color: #d95980; }
 .yellow { background-color: #f99b45; }
 .purple { background-color: #819ff9; }
 .green { background-color: #63aac0; }
 
-/* Flashes */
+/* Flash effects */
 .flash { background-color: #fff !important; }
 .userflash { background-color: limegreen !important; }
 
-/* Popup styling */
+/* Popups */
 .popup {
   position: fixed;
   top: 50%;
@@ -119,6 +122,7 @@ h2 {
   transform: translate(-50%, -50%) scale(1);
 }
 
+/* Lose animation */
 body.lose {
   animation: loseFlash 0.6s ease;
 }
@@ -148,11 +152,11 @@ body.lose {
   color: #111;
 }
 
-/* Responsive tweaks */
+/* Responsive adjustments for mobile */
 @media (max-width: 600px) {
   h1 { font-size: 1.6rem; }
-  h2 { font-size: 1rem; }
-  .card { min-width: 100px; padding: 8px; }
+  h2 { font-size: 0.9rem; }
+  .card { flex: 1 1 80px; padding: 8px; }
   .card span { font-size: 16px; }
-  .scoreboard { gap: 10px; }
+  .container { height: 60vw; } /* full width square for small screens */
 }
