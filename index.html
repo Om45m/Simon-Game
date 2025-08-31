@@ -2,16 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Simon Says Game</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="nextLevelPopup" class="popup">Next Level 🎉</div>
+  <div id="nextLevelPopup" class="popup">Next Level 🎉</div>
+  <div id="losePopup" class="popup">Oops! Try Again 💔</div>
 
   <h1>Simon Says Game</h1>
-<h2>Press any key to Start the Game</h2>
-
+  <h2>Press any key, click, or tap to start</h2>
 
   <div class="scoreboard">
     <div class="card">
@@ -32,23 +35,16 @@
     </div>
   </div>
 
- <div id="losePopup" class="popup">Oops! Try Again 💔</div>
-
   <div class="container">
-    <div class="row">
-      <div class="btn red" id="red"></div>
-      <div class="btn yellow" id="yellow"></div>
-    </div>
-    <div class="row">
-      <div class="btn purple" id="purple"></div>
-      <div class="btn green" id="green"></div>
-    </div>
+    <div class="btn red" id="red"></div>
+    <div class="btn yellow" id="yellow"></div>
+    <div class="btn purple" id="purple"></div>
+    <div class="btn green" id="green"></div>
   </div>
+
   <div class="signature">© Om Gabani</div>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
-
-
